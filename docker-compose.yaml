@@ -1,6 +1,6 @@
 services:
   immich-dates:
-    # image: ghcr.io/OWNER/REPO:edge
+    image: ghcr.io/joeshuff/immich-date-fixer:edge
     container_name: immich-dates
     restart: unless-stopped
     environment:
