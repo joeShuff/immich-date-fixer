@@ -1,0 +1,13 @@
+services:
+  immich-dates:
+    # image: ghcr.io/OWNER/REPO:edge
+    container_name: immich-dates
+    restart: unless-stopped
+    environment:
+      PORT: ${PORT:-5055}
+    ports:
+      # BIND defaults to this machine only. The app has no login and stores your
+      # API key, so don't use 0.0.0.0 without a reverse proxy that adds auth.
+      - "${BIND:-127.0.0.1}:${PORT:-5055}:${PORT:-5055}"
+    volumes:
+      - ./data:/data
