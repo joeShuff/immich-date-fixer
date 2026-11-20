@@ -98,6 +98,12 @@ Inside a container, `localhost` is the container itself. Use your server's LAN
 address (for example `http://192.168.1.10:2283`) or, if both containers share a
 Docker network, the Immich container's name.
 
+### Troubleshooting
+
+- **`unable to open database file`:** the data folder is not writable by the app. Current
+  images fix this themselves at start-up, so rebuild or pull the latest image. On an
+  older image, run `sudo chown 10001 ./data`.
+
 ## Multiple users
 
 Each browser gets a random ID in a cookie (`uid`) and its own private profile: its own

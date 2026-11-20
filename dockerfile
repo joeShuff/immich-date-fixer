@@ -11,14 +11,20 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 COPY immich_dates.py .
 
-# Run as an unprivileged user; /data holds one SQLite file per browser profile.
-RUN adduser -S -u 10001 app && mkdir /data && chown app /data
-USER app
+# The app runs as an unprivileged user. The entrypoint starts as root only to fix
+# ownership of /data (a bind mount is usually root-owned), then drops to that user.
+# /data holds one SQLite file per browser profile.
+RUN apk add --no-cache su-exec \
+ && adduser -S -u 10001 app && mkdir /data && chown app /data
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 VOLUME /data
 EXPOSE ${PORT}
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s \
-  CMD python -c "import os, urllib.request as u; u.urlopen('http://127.0.0.1:%s/api/stats' % os.environ['PORT'], timeout=3)"
+  CMD python -c "import os, urllib.request as u; u.urlopen('http://127.0.0.1:%s/healthz' % os.environ['PORT'], timeout=3)"
+
+ENTRYPOINT ["/entrypoint.sh"]
 
 # One worker only: scan progress is held in memory, so it must be a single process.
 # Shell form via sh -c so ${PORT} is expanded at start-up.

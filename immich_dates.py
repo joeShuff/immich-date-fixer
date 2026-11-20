@@ -238,6 +238,11 @@ def remember_user(resp):
     return resp
 
 
+@app.get("/healthz")
+def healthz():
+    return "ok"  # used by the container health check; deliberately never touches a database
+
+
 @app.get("/")
 def index():
     return PAGE
